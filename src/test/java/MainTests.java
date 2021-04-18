@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainTests {
     private final String orderText = "Open https://www.google.com\nstep 1\nstep 2\nstep 3";
-    private final String openUrlPatter = "Open .*?((http|ftp|https)://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?)";
+    private final String openUrlPatter = "Open.*?((http|ftp|https)://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?)";
 
     private List<String> getUrlsFromOrder(String orderText) {
         String[] steps = orderText.split("\n");
