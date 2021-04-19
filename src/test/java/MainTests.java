@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.title;
+import static com.codeborne.selenide.Selenide.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainTests {
-    private final String orderText = "Open https://www.google.com\nstep 1\nstep 2\nstep 3";
+    private final String orderText = "Open https://bash.im\nstep 1\nstep 2\nstep 3";
     private final String openUrlPatter = "Open.*?((http|https)://[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?)";
 
     private List<String> getUrlsFromOrder(String orderText) {
@@ -36,7 +35,14 @@ public class MainTests {
             open(url);
             String title = title();
             System.out.println(title);
-            assertThat(title).isEqualTo("Google");
+
+            assertThat(title).isEqualTo("Цитатник Рунета");
+
+            if ($("h1").exists()) {
+                String header = $("h1").getText();
+                System.out.println(header);
+                assertThat(header).isEqualTo("Bash.im — Цитатник Рунета");
+            }
         });
     }
 
@@ -46,7 +52,14 @@ public class MainTests {
             Document doc = Jsoup.connect(url).get();
             String title = doc.title();
             System.out.println(title);
-            assertThat(title).isEqualTo("Google");
+
+            assertThat(title).isEqualTo("Цитатник Рунета");
+
+            if (!doc.select("h1").isEmpty()) {
+                String header = doc.select("h1").text();
+                System.out.println(header);
+                assertThat(header).isEqualTo("Bash.im — Цитатник Рунета");
+            }
         }
     }
 }
