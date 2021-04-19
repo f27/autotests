@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,37 +31,49 @@ public class MainTests {
         return urls;
     }
 
+    private Map<String, List<String>> collectStandardElements(String url) throws IOException {
+        Map<String, List<String>> collectedElements = new HashMap<>();
+        Document doc = Jsoup.connect(url).get();
+
+        if (!doc.title().isEmpty()) {
+            List<String> titleText = new ArrayList<>();
+            titleText.add(doc.title());
+            collectedElements.put("title", titleText);
+        }
+
+        for (int i = 1; i <= 6; i++) {
+            if (!doc.select("h" + i).isEmpty()) {
+                List<String> headerText = new ArrayList<>();
+                doc.select("h" + i).forEach((header) ->
+                        headerText.add(header.text())
+                );
+                collectedElements.put("h" + i, headerText);
+            }
+        }
+
+        return collectedElements;
+    }
+
     @Test
     void selenideTitles() {
         getUrlsFromOrder(orderText).forEach((url) -> {
-            open(url);
-            String title = title();
-            System.out.println(title);
-
-            assertThat(title).isEqualTo("Цитатник Рунета");
-
-            if ($("h1").exists()) {
-                String header = $("h1").getText();
-                System.out.println(header);
-                assertThat(header).isEqualTo("Bash.im — Цитатник Рунета");
+            Map<String, List<String>> expectedData = new HashMap<>();
+            try {
+                expectedData = collectStandardElements(url);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            open(url);
+            expectedData.forEach((htmlTag, dataList) ->
+                    dataList.forEach((data) -> {
+                        if (htmlTag.equals("title"))
+                            assertThat(title()).isEqualTo(data);
+                        else
+                            assertThat($$(htmlTag).texts()).contains(data);
+                    })
+            );
+
         });
     }
 
-    @Test
-    void jsoupTitles() throws IOException {
-        for (String url : getUrlsFromOrder(orderText)) {
-            Document doc = Jsoup.connect(url).get();
-            String title = doc.title();
-            System.out.println(title);
-
-            assertThat(title).isEqualTo("Цитатник Рунета");
-
-            if (!doc.select("h1").isEmpty()) {
-                String header = doc.select("h1").text();
-                System.out.println(header);
-                assertThat(header).isEqualTo("Bash.im — Цитатник Рунета");
-            }
-        }
-    }
 }
