@@ -32,6 +32,7 @@ public class MainTests {
     }
 
     private Map<String, List<String>> collectStandardElements(String url) throws IOException {
+        String[] tags = new String[] {"h1", "h2", "h3", "h4", "h5", "h6"};
         Map<String, List<String>> collectedElements = new HashMap<>();
         Document doc = Jsoup.connect(url).get();
 
@@ -41,13 +42,13 @@ public class MainTests {
             collectedElements.put("title", titleText);
         }
 
-        for (int i = 1; i <= 6; i++) {
-            if (!doc.select("h" + i).isEmpty()) {
+        for (String tag : tags) {
+            if (!doc.select(tag).isEmpty()) {
                 List<String> headerText = new ArrayList<>();
-                doc.select("h" + i).forEach((header) ->
+                doc.select(tag).forEach((header) ->
                         headerText.add(header.text())
                 );
-                collectedElements.put("h" + i, headerText);
+                collectedElements.put(tag, headerText);
             }
         }
 
