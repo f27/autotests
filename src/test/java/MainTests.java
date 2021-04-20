@@ -65,7 +65,6 @@ public class MainTests {
                 e.printStackTrace();
             }
             open(url);
-            System.out.println(expectedData.keySet());
             expectedData.forEach((htmlTag, dataList) ->
                     dataList.forEach((data) -> {
                         if (htmlTag.equals("title"))
